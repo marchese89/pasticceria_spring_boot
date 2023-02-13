@@ -59,6 +59,11 @@ SOFTWARE.
 				mostraModifica(id);
 			});
 
+			$('tbody').on('click', '.edit2', function () {
+				var id = $(this).data('id');
+				mostraAggiungiIngrediente(id);
+			});
+
 			$('tbody').on('click', '.delete', function () {
 
 				var elementToRemove = $(this).parent();
@@ -85,6 +90,28 @@ SOFTWARE.
 
 		});
 
+		function cancellaIngrediente(id) {
+
+			
+			
+			$.ajax({
+				url: '/admin/api/dolci/ingrediente/' + id,
+				method: 'delete',
+				success: function (data) {
+
+					loadDolci();
+
+					var myToast = Toastify({
+						text: "Ingrediente Cancellato",
+						duration: 2000
+					});
+
+					myToast.showToast();
+				}
+			});
+		
+		}
+
 		function loadDolci() {
 
 			$('tbody').html('');
@@ -96,13 +123,24 @@ SOFTWARE.
 
 					for (var i = data.length - 1; i >= 0; i--) {
 
-						$('tbody').append('<tr><td>' + data[i].id + '</td><td>' + data[i].nome +
+						$('tbody').append('<tr><td>' + data[i].id + '</td><td nowrap>' + data[i].nome +
 							'</td><td>' + data[i].prezzo + '&euro;</td><td class="edit pointer" data-id="' + data[i].id +
 							'" data-name="' + data[i].nome + '"><i class="fa fa-pencil" aria-hidden="true"></i></td>' +
-							'<td class="edit pointer" data-id="' + data[i].id +
+							'<td class="edit2 pointer" data-id="' + data[i].id +
 							'" data-name="' + data[i].nome + '"><i class="fa fa-pencil" aria-hidden="true"></i></td>'
 							+ '<td class="delete pointer" data-id="' + data[i].id +
 							'"><i class="fa fa-trash" aria-hidden="true"></i></td></tr>');
+						var lista_i = data[i]['lista'];
+						if (lista_i.length > 0) {
+							$('tbody').append('<tr><td colspan=6"><h4>Lista Ingredienti</h4></td></tr>');
+							$('tbody').append('<tr><th>Nome</th><th>Qta</th><th>U&nbsp;<nowrap>Misura</th><th>Modifica</th>' +
+								'<th>Cancella</th></tr>');
+							for (var j = 0; j < lista_i.length; j++)
+								$('tbody').append('<tr><td nowrap>' + lista_i[j].nome + '</td><td>' +
+									lista_i[j].qta + '</td><td>' + lista_i[j].uMisura + '</td><td>modifica</td><td class="delete2 pointer" data-id="' + lista_i[j].id +
+									'" onclick="cancellaIngrediente('+lista_i[j].id +')"><i class="fa fa-trash" aria-hidden="true"></i></td>');
+							$('tbody').append('</tr>');
+						}
 					}
 
 				}
@@ -115,7 +153,9 @@ SOFTWARE.
 		function nDolce() {
 			document.getElementById("ins_dolce").style.display = 'none';
 		}
-
+		function n_mod_Dolce() {
+			document.getElementById("mod_dolce").style.display = 'none';
+		}
 
 		function inserisciDolce() {
 			var nome = document.getElementById("nome").value;
@@ -150,14 +190,14 @@ SOFTWARE.
 			document.getElementById("id_dolce").value = id;
 			document.getElementById("nome_id_dolce").innerText = id;
 		}
-		
-		function modificaDolce(){
+
+		function modificaDolce() {
 			var id = document.getElementById("id_dolce").value
 			var nome = document.getElementById("m_nome").value;
 			var prezzo = document.getElementById("m_prezzo").value;
 
 			$.ajax({
-				url: '/admin/api/dolci/'+ id,
+				url: '/admin/api/dolci/' + id,
 				method: 'put',
 				contentType: 'application/json',
 				data: JSON.stringify({
@@ -180,6 +220,50 @@ SOFTWARE.
 				}
 			});
 		}
+
+		function mostraAggiungiIngrediente(id) {
+			document.getElementById("add_ingr").style.display = 'block';
+			document.getElementById("id_dolce2").value = id;
+			document.getElementById("nome_id_dolce2").innerText = id;
+		}
+
+		function n_agg_Ingr() {
+			document.getElementById("add_ingr").style.display = 'none';
+			document.getElementById("id_dolce2").value = "";
+			document.getElementById("nome_id_dolce2").innerText = "";
+		}
+
+		function aggiungiIngrediente() {
+			var id = document.getElementById("id_dolce2").value;
+			var nome_ingr = document.getElementById("nome_ingr").value;
+			var qta = document.getElementById("qta").value;
+			var uMisura = document.getElementById("u_misura").value;
+
+			$.ajax({
+				url: '/admin/api/dolci/' + id + '/' + nome_ingr + '/' + qta + '/' + uMisura,
+				method: 'put',
+				contentType: 'application/json',
+				data: JSON.stringify({
+					id: id,
+					qta: qta,
+					uMisura: uMisura
+				}),
+				success: function (data) {
+					document.getElementById("nome_ingr").value = "";
+					document.getElementById("qta").value = "";
+					document.getElementById("u_misura").value = "";
+					document.getElementById("add_ingr").style.display = 'none';
+					loadDolci();
+
+					var myToast = Toastify({
+						text: "Ingrediente Inserito con successo",
+						duration: 2000
+					});
+
+					myToast.showToast();
+				}
+			});
+		}
 	</script>
 </head>
 
@@ -194,7 +278,7 @@ SOFTWARE.
 	</header>
 
 	<main class="admin">
-		<div><a href="./logout">LOGOUT</a></div>
+		<div><a href="./logout">Logout</a></div>
 		<div class="align-right">
 			<div class="btn btn-info add-dolce" onclick="mostraAggiungi()">Dolce&nbsp;&nbsp; <i class="fa fa-plus"
 					aria-hidden="true"></i></a></div>
@@ -223,7 +307,8 @@ SOFTWARE.
 			</div>
 		</div>
 		<div id="mod_dolce" style="display: none;">
-			<h1>Modifica Dolce <label id="nome_id_dolce"></labelid></h1>
+			<h1>Modifica Dolce <label id="nome_id_dolce"></labelid>
+			</h1>
 			<input type="hidden" name="id" id="id_dolce">
 			<div class="form-group">
 				<label for="nome">Nome</label>
@@ -244,6 +329,37 @@ SOFTWARE.
 				<button onclick="n_mod_Dolce()">Annulla</button>
 			</div>
 		</div>
+		<div id="add_ingr" style="display: none;">
+			<h1>Aggiungi Ingrediente <label id="nome_id_dolce2"></labelid>
+			</h1>
+			<input type="hidden" name="id" id="id_dolce2">
+			<div class="form-group">
+				<label for="nome_ingrediente">Nome Ingrediente</label>
+				<p>
+					<input type="text" class="form-control" id="nome_ingr" name="nome_ingr"
+						placeholder="nome ingrediente">
+				<p>
+			</div>
+			<div class="form-group">
+				<label for="nome">Quanti&agrave;</label>
+				<p>
+					<input type="text" class="form-control" id="qta" name="qta" placeholder="quantit&agrave;">
+			</div>
+			<div class="form-group">
+				<label for="prezzo">Unit&agrave; di Misura</label>
+				<p>
+					<input type="text" class="form-control" id="u_misura" name="u_misura"
+						placeholder="unit&agrave; di misura">
+				<p>
+			</div>
+
+			<div class="align-left">
+				<button name="submit" class="add btn-info" onclick="aggiungiIngrediente()">Aggiungi</button>
+			</div>
+			<div class="align-left">
+				<button onclick="n_agg_Ingr()">Annulla</button>
+			</div>
+		</div>
 
 		<table class="admin-table" border="0">
 			<thead>
@@ -253,202 +369,10 @@ SOFTWARE.
 					<th>Prezzo</th>
 					<th>Modifica</th>
 					<th>Aggiungi Ingrediente</th>
-					<th>Delete</th>
+					<th>Cancella</th>
 				</tr>
 			</thead>
 			<tbody>
-				<!--
-					<tr>
-						<td>27</td>
-						<td>./img/27.png</td>			
-						<td><img src="./img/27.png" width ="100" height = "100"></td>								
-						<td class="edit pointer"><i class="fa fa-pencil" aria-hidden="true"></i></td>
-						<td class="delete pointer"><i class="fa fa-trash" aria-hidden="true"></i></td>
-					</tr>
-					<tr>
-						<td>26</td>						
-						<td>./img/26.png</td>
-						<td><img src="./img/26.png" width ="100" height = "100"></td>						
-						<td class="edit pointer"><i class="fa fa-pencil" aria-hidden="true"></i></td>
-						<td class="delete pointer"><i class="fa fa-trash" aria-hidden="true"></i></td>
-					</tr>
-					<tr>
-						<td>25</td>						
-						<td>./img/25.png</td>
-						<td><img src="./img/25.png" width ="100" height = "100"></td>						
-						<td class="edit pointer"><i class="fa fa-pencil" aria-hidden="true"></i></td>
-						<td class="delete pointer"><i class="fa fa-trash" aria-hidden="true"></i></td>
-					</tr>
-					<tr>
-						<td>24</td>						
-						<td>./img/24.png</td>
-						<td><img src="./img/24.png" width ="100" height = "100"></td>						
-						<td class="edit pointer"><i class="fa fa-pencil" aria-hidden="true"></i></td>
-						<td class="delete pointer"><i class="fa fa-trash" aria-hidden="true"></i></td>
-					</tr>
-					<tr>
-						<td>23</td>					
-						<td>./img/23.png</td>
-						<td><img src="./img/23.png" width ="100" height = "100"></td>						
-						<td class="edit pointer"><i class="fa fa-pencil" aria-hidden="true"></i></td>
-						<td class="delete pointer"><i class="fa fa-trash" aria-hidden="true"></i></td>
-					</tr>
-					<tr>
-						<td>22</td>						
-						<td>./img/22.png</td>
-						<td><img src="./img/22.png" width ="100" height = "100"></td>						
-						<td class="edit pointer"><i class="fa fa-pencil" aria-hidden="true"></i></td>
-						<td class="delete pointer"><i class="fa fa-trash" aria-hidden="true"></i></td>
-					</tr>
-					<tr>
-						<td>21</td>						
-						<td>./img/21.png</td>
-						<td><img src="./img/21.png" width ="100" height = "100"></td>						
-						<td class="edit pointer"><i class="fa fa-pencil" aria-hidden="true"></i></td>
-						<td class="delete pointer"><i class="fa fa-trash" aria-hidden="true"></i></td>
-					</tr>
-					<tr>
-						<td>20</td>						
-						<td>./img/20.png</td>
-						<td><img src="./img/20.png" width ="100" height = "100"></td>						
-						<td class="edit pointer"><i class="fa fa-pencil" aria-hidden="true"></i></td>
-						<td class="delete pointer"><i class="fa fa-trash" aria-hidden="true"></i></td>
-					</tr>
-					<tr>
-						<td>19</td>						
-						<td>./img/19.png</td>
-						<td><img src="./img/19.png" width ="100" height = "100"></td>						
-						<td class="edit pointer"><i class="fa fa-pencil" aria-hidden="true"></i></td>
-						<td class="delete pointer"><i class="fa fa-trash" aria-hidden="true"></i></td>
-					</tr>
-					<tr>
-						<td>18</td>						
-						<td>./img/18.png</td>
-						<td><img src="./img/18.png" width ="100" height = "100"></td>						
-						<td class="edit pointer"><i class="fa fa-pencil" aria-hidden="true"></i></td>
-						<td class="delete pointer"><i class="fa fa-trash" aria-hidden="true"></i></td>
-					</tr>
-					<tr>
-						<td>17</td>						
-						<td>./img/17.png</td>
-						<td><img src="./img/17.png" width ="100" height = "100"></td>						
-						<td class="edit pointer"><i class="fa fa-pencil" aria-hidden="true"></i></td>
-						<td class="delete pointer"><i class="fa fa-trash" aria-hidden="true"></i></td>
-					</tr>
-					<tr>
-						<td>16</td>						
-						<td>./img/16.png</td>
-						<td><img src="./img/16.png" width ="100" height = "100"></td>						
-						<td class="edit pointer"><i class="fa fa-pencil" aria-hidden="true"></i></td>
-						<td class="delete pointer"><i class="fa fa-trash" aria-hidden="true"></i></td>
-					</tr>
-					<tr>
-						<td>15</td>						
-						<td>./img/15.png</td>
-						<td><img src="./img/15.png" width ="100" height = "100"></td>						
-						<td class="edit pointer"><i class="fa fa-pencil" aria-hidden="true"></i></td>
-						<td class="delete pointer"><i class="fa fa-trash" aria-hidden="true"></i></td>
-					</tr>
-					<tr>
-						<td>14</td>						
-						<td>./img/14.png</td>
-						<td><img src="./img/14.png" width ="100" height = "100"></td>						
-						<td class="edit pointer"><i class="fa fa-pencil" aria-hidden="true"></i></td>
-						<td class="delete pointer"><i class="fa fa-trash" aria-hidden="true"></i></td>
-					</tr>
-					<tr>
-						<td>13</td>						
-						<td>./img/13.png</td>
-						<td><img src="./img/13.png" width ="100" height = "100"></td>						
-						<td class="edit pointer"><i class="fa fa-pencil" aria-hidden="true"></i></td>
-						<td class="delete pointer"><i class="fa fa-trash" aria-hidden="true"></i></td>
-					</tr>
-					<tr>
-						<td>12</td>						
-						<td>./img/12.png</td>
-						<td><img src="./img/12.png" width ="100" height = "100"></td>						
-						<td class="edit pointer"><i class="fa fa-pencil" aria-hidden="true"></i></td>
-						<td class="delete pointer"><i class="fa fa-trash" aria-hidden="true"></i></td>
-					</tr>
-					<tr>
-						<td>11</td>						
-						<td>./img/11.png</td>
-						<td><img src="./img/11.png" width ="100" height = "100"></td>						
-						<td class="edit pointer"><i class="fa fa-pencil" aria-hidden="true"></i></td>
-						<td class="delete pointer"><i class="fa fa-trash" aria-hidden="true"></i></td>
-					</tr>
-					<tr>
-						<td>10</td>						
-						<td>./img/10.png</td>
-						<td><img src="./img/10.png" width ="100" height = "100"></td>						
-						<td class="edit pointer"><i class="fa fa-pencil" aria-hidden="true"></i></td>
-						<td class="delete pointer"><i class="fa fa-trash" aria-hidden="true"></i></td>
-					</tr>
-					<tr>
-						<td>9</td>						
-						<td>./img/09.png</td>
-						<td><img src="./img/09.png" width ="100" height = "100"></td>						
-						<td class="edit pointer"><i class="fa fa-pencil" aria-hidden="true"></i></td>
-						<td class="delete pointer"><i class="fa fa-trash" aria-hidden="true"></i></td>
-					</tr>
-					<tr>
-						<td>8</td>						
-						<td>./img/08.png</td>
-						<td><img src="./img/08.png" width ="100" height = "100"></td>						
-						<td class="edit pointer"><i class="fa fa-pencil" aria-hidden="true"></i></td>
-						<td class="delete pointer"><i class="fa fa-trash" aria-hidden="true"></i></td>
-					</tr>
-					<tr>
-						<td>7</td>						
-						<td>./img/07.png</td>
-						<td><img src="./img/07.png" width ="100" height = "100"></td>						
-						<td class="edit pointer"><i class="fa fa-pencil" aria-hidden="true"></i></td>
-						<td class="delete pointer"><i class="fa fa-trash" aria-hidden="true"></i></td>
-					</tr>
-					<tr>
-						<td>6</td>						
-						<td>./img/06.png</td>
-						<td><img src="./img/06.png" width ="100" height = "100"></td>						
-						<td class="edit pointer"><i class="fa fa-pencil" aria-hidden="true"></i></td>
-						<td class="delete pointer"><i class="fa fa-trash" aria-hidden="true"></i></td>
-					</tr>
-					<tr>
-						<td>5</td>						
-						<td>./img/05.png</td>
-						<td><img src="./img/05.png" width ="100" height = "100"></td>						
-						<td class="edit pointer"><i class="fa fa-pencil" aria-hidden="true"></i></td>
-						<td class="delete pointer"><i class="fa fa-trash" aria-hidden="true"></i></td>
-					</tr>                
-					<tr>
-						<td>4</td>						
-						<td>./img/04.png</td>
-						<td><img src="./img/04.png" width ="100" height = "100"></td>						
-						<td class="edit pointer"><i class="fa fa-pencil" aria-hidden="true"></i></td>
-						<td class="delete pointer"><i class="fa fa-trash" aria-hidden="true"></i></td>
-					</tr>               
-					<tr>
-						<td>3</td>						
-						<td>./img/03.png</td>
-						<td><img src="./img/03.png" width ="100" height = "100"></td>						
-						<td class="edit pointer"><i class="fa fa-pencil" aria-hidden="true"></i></td>
-						<td class="delete pointer"><i class="fa fa-trash" aria-hidden="true"></i></td>
-					</tr>
-					<tr>
-						<td>2</td>						
-						<td>./img/02.png</td>
-						<td><img src="./img/02.png" width ="100" height = "100"></td>						
-						<td class="edit pointer"><i class="fa fa-pencil" aria-hidden="true"></i></td>
-						<td class="delete pointer"><i class="fa fa-trash" aria-hidden="true"></i></td>
-					</tr>
-					<tr>
-						<td>1</td>						
-						<td>./img/01.png</td>
-						<td><img src="./img/01.png" width ="100" height = "100"></td>					
-						<td class="edit pointer"><i class="fa fa-pencil" aria-hidden="true"></i></td>
-						<td class="delete pointer"><i class="fa fa-trash" aria-hidden="true"></i></td>
-					</tr>
-					-->
-
 			</tbody>
 		</table>
 

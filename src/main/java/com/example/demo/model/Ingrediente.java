@@ -1,25 +1,31 @@
 package com.example.demo.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 
 @Entity
 public class Ingrediente {
-	
-	
+
+	@JsonBackReference
 	@ManyToOne
-	@JoinColumn(name = "dolce_id", referencedColumnName="id")
+	@JoinColumn(name = "dolce_id", referencedColumnName = "id")
 	Dolce idDolce;
-	
+
 	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long id;
 	
-	private int qta;
+	private String nome;
 	
-	private String uMisura;
+	private int qta;
 
+	private String uMisura;
 
 
 	public Dolce getIdDolce() {
@@ -54,6 +60,13 @@ public class Ingrediente {
 		this.id = id;
 	}
 
-	
-	
+	public String getNome() {
+		return nome;
+	}
+
+	public void setNome(String nome) {
+		this.nome = nome;
+	}
+
+
 }

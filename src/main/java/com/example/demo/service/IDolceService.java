@@ -15,4 +15,8 @@ public interface IDolceService {
 	public Optional<Dolce> update(int id, Dolce dolce);
 
 	public Boolean delete(int id);
+	
+	public Boolean addIngrediente(int id, String nome,int qta, String uMisura);
+	
+	public Boolean removeIngrediente(int id);
 }

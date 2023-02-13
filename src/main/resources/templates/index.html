@@ -45,7 +45,7 @@ SOFTWARE.
 				// dynamic version
 				
 				$.ajax({
-					url : '/api/photos',
+					url : '/api/dolci',
 					method : 'get',
 					success : function(data) {
 						
@@ -53,7 +53,7 @@ SOFTWARE.
 						
 						for(var i = data.length - 1; i >= 0; i--) {
 							
-							$('.grid').append('<div class="grid-item"><img src="' + data[i].url + '" alt="" srcset=""></div>');
+							$('.grid').append('<div class="grid-item"><label>' + data[i].nome + '</label></div>');
 						}
 						
 						// init Masonry

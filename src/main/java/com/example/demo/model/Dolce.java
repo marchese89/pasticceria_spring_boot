@@ -2,9 +2,12 @@ package com.example.demo.model;
 
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.List;
 import java.util.Set;
 
 import org.springframework.format.annotation.DateTimeFormat;
+
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -66,6 +69,36 @@ public class Dolce {
 		this.data = data;
 	}
 
+	@JsonManagedReference
 	@OneToMany(cascade = CascadeType.ALL)
-	private Set<Ingrediente> lista;
+	private List<Ingrediente> lista;
+	
+	public void aggiungiIngrediente(String nome,int qta, String uMisura) {
+		Ingrediente i = new Ingrediente();
+		i.setIdDolce(this);
+		i.setNome(nome);
+		i.setQta(qta);
+		i.setuMisura(uMisura);
+		lista.add(i);
+	}
+	
+	public void rimuoviIngrediente(int id) {
+		int index = -1;
+		for(int i = 0; i < lista.size(); i++) {
+			if(lista.get(i).getId() == id) {
+				index = i;
+				break;
+			}
+		}
+		lista.remove(index);
+	}
+
+	public List<Ingrediente> getLista() {
+		return lista;
+	}
+
+	public void setLista(List<Ingrediente> lista) {
+		this.lista = lista;
+	}
+	
 }

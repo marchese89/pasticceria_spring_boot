@@ -6,13 +6,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.example.demo.model.Dolce;
+import com.example.demo.model.Ingrediente;
 import com.example.demo.repository.IDolceRepository;
+import com.example.demo.repository.IngredienteRepository;
 
 @Service("mainDolceService")
 public class DBDolceService implements IDolceService {
 
 	@Autowired
 	private IDolceRepository dolceRepository;
+	
+	@Autowired
+	private IngredienteRepository ingredienteRepository;
 
 	@Override
 	public Iterable<Dolce> getAll() {
@@ -57,6 +62,24 @@ public class DBDolceService implements IDolceService {
 
 		dolceRepository.delete(foundDolce.get());
 
+		return true;
+	}
+
+	@Override
+	public Boolean addIngrediente(int id, String nome,int qta, String uMisura) {
+		Optional<Dolce> foundDolce = dolceRepository.findById(id);
+		foundDolce.get().aggiungiIngrediente(nome, qta, uMisura);
+		dolceRepository.save(foundDolce.get());
+		return true;
+	}
+	
+	@Override
+	public Boolean removeIngrediente(int id) {
+		Optional<Ingrediente> foundIngrediente = ingredienteRepository.findById(id);
+		Optional<Dolce> foundDolce = dolceRepository.findById(foundIngrediente.get().getIdDolce().getId());
+		foundDolce.get().rimuoviIngrediente(id);
+		dolceRepository.save(foundDolce.get());
+		ingredienteRepository.delete(foundIngrediente.get());
 		return true;
 	}
 

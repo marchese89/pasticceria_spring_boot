@@ -14,6 +14,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import com.example.demo.model.Dolce;
 import com.example.demo.service.DBDolceService;
+import com.example.demo.service.DBIngredienteService;
 
 @RestController
 public class AdminDolceController {
@@ -72,6 +73,34 @@ public class AdminDolceController {
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "item not found");
 		}
 		
+		
+	}
+	
+	@RequestMapping(value = "/admin/api/dolci/ingrediente/{id}", method = RequestMethod.DELETE)
+	public void deleteIngrediente(@PathVariable int id) {
+		
+		Boolean isDeleted = dolceService.removeIngrediente(id);
+		
+		if (isDeleted == false) {
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "item not found");
+		}
+		
+		
+	}
+	
+	@RequestMapping(value ="/admin/api/dolci/{id}/{nome_ingr}/{qta}/{uMisura}", method = RequestMethod.PUT)
+	public Dolce addIngrediente(@PathVariable int id, @PathVariable int qta,  @PathVariable String nome_ingr, @PathVariable String uMisura, @RequestBody Dolce dolce) {
+		
+		dolceService.addIngrediente(id,nome_ingr, qta, uMisura);
+		
+		Optional<Dolce> foundDolce = dolceService.getById(id);
+		
+		if (foundDolce.isEmpty()) {
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "item not found");
+		}
+		
+		
+		return foundDolce.get();
 		
 	}
 
