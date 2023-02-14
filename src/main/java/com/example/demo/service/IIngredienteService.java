@@ -12,7 +12,7 @@ public interface IIngredienteService {
 
 	public Ingrediente create(Ingrediente ingrediente);
 
-	public Optional<Ingrediente> update(int id, Ingrediente ingrediente);
+	public Optional<Ingrediente> update(int id, String nome_ingr, int qta, String uMisura);
 
 	public Boolean delete(int id);
 

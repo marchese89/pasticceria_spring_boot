@@ -40,9 +40,9 @@ a {
 }         
 
 /* Unvisited link  */
-a:visited {color:#fff;} /* Visited link    */
-a:hover {color:#fff;}   /* Mouse over link */
-a:active {color:#fff;}  /* Selected link   */
+a:visited {color:black;} /* Visited link    */
+a:hover {color:gray;}   /* Mouse over link */
+a:active {color:black;}  /* Selected link   */
 
 .btn-info {
     color: #fff;
@@ -55,8 +55,8 @@ a:active {color:#fff;}  /* Selected link   */
 .btn-info:active,
 .btn-info:focus,
 .btn-info:visited {
-    background-color: #323535;
-    border-color: #ffffff;
+    background-color: #ffffff;
+    border-color: #323535;
 }
 
 .align-right {
@@ -64,8 +64,8 @@ a:active {color:#fff;}  /* Selected link   */
 }
 
 body {
-    background-color: black;
-    color: #fff;
+    background-color: #fff;
+    color: black;
     font-family: Arial, Helvetica, sans-serif;
 	font-size:16px;
 }
@@ -80,7 +80,7 @@ header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background-color: #000;
+    background-color: white;
     opacity: 0.7;
     padding:80px 203px 10px 200px;
 	font-size:30px;
@@ -184,3 +184,4 @@ button{
 button:hover{
 	cursor: pointer;
 }
+

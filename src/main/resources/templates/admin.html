@@ -111,6 +111,53 @@ SOFTWARE.
 			});
 		
 		}
+		
+	
+		
+		function mostraModIngrediente(id){
+			document.getElementById("mod_ingr").style.display = 'block';
+			document.getElementById("id_ingr").value = id;
+			document.getElementById("nome_id_ingr").innerText = id;
+		}
+		
+		function n_mod_Ingr(){
+			document.getElementById("mod_ingr").style.display = 'none';
+			document.getElementById("id_ingr").value = "";
+			document.getElementById("nome_id_ingr").innerText = "";
+		}
+		
+		function modIngrediente(){
+			var id = document.getElementById("id_ingr").value;
+			var nome_ingr = document.getElementById("nome_ingr2").value;
+			var qta = document.getElementById("qta2").value;
+			var uMisura = document.getElementById("u_misura2").value;
+
+			$.ajax({
+				url: '/admin/api/dolci/' + id + '/' + nome_ingr + '/' + qta + '/' + uMisura,
+				method: 'post',
+				contentType: 'application/json',
+				data: JSON.stringify({
+					id: id,
+					nome: nome_ingr,
+					qta: qta,
+					uMisura: uMisura
+				}),
+				success: function () {
+					document.getElementById("nome_ingr2").value = "";
+					document.getElementById("qta2").value = "";
+					document.getElementById("u_misura2").value = "";
+					document.getElementById("mod_ingr").style.display = 'none';
+					loadDolci();
+
+					var myToast = Toastify({
+						text: "Ingrediente Modificato con successo",
+						duration: 2000
+					});
+
+					myToast.showToast();
+				}
+			});
+		}
 
 		function loadDolci() {
 
@@ -137,7 +184,10 @@ SOFTWARE.
 								'<th>Cancella</th></tr>');
 							for (var j = 0; j < lista_i.length; j++)
 								$('tbody').append('<tr><td nowrap>' + lista_i[j].nome + '</td><td>' +
-									lista_i[j].qta + '</td><td>' + lista_i[j].uMisura + '</td><td>modifica</td><td class="delete2 pointer" data-id="' + lista_i[j].id +
+									lista_i[j].qta + '</td><td>' + lista_i[j].uMisura + '</td>' +
+									'<td class="edit3 pointer" onclick="mostraModIngrediente(' + lista_i[j].id +
+								')"><i class="fa fa-pencil" aria-hidden="true"></i></td>' +
+									'<td class="delete2 pointer" data-id="' + lista_i[j].id +
 									'" onclick="cancellaIngrediente('+lista_i[j].id +')"><i class="fa fa-trash" aria-hidden="true"></i></td>');
 							$('tbody').append('</tr>');
 						}
@@ -245,6 +295,7 @@ SOFTWARE.
 				contentType: 'application/json',
 				data: JSON.stringify({
 					id: id,
+					nome:nome_ingr,
 					qta: qta,
 					uMisura: uMisura
 				}),
@@ -358,6 +409,37 @@ SOFTWARE.
 			</div>
 			<div class="align-left">
 				<button onclick="n_agg_Ingr()">Annulla</button>
+			</div>
+		</div>
+		
+				<div id="mod_ingr" style="display: none;">
+			<h1>Modifica Ingrediente <label id="nome_id_ingr"></labelid>
+			</h1>
+			<input type="hidden" name="id" id="id_ingr">
+			<div class="form-group">
+				<label for="nome_ingrediente">Nome Ingrediente</label>
+				<p>
+					<input type="text" class="form-control" id="nome_ingr2" name="nome_ingr"
+						>
+				<p>
+			</div>
+			<div class="form-group">
+				<label for="nome">Quanti&agrave;</label>
+				<p>
+					<input type="text" class="form-control" id="qta2" name="qta2" >
+			</div>
+			<div class="form-group">
+				<label for="prezzo">Unit&agrave; di Misura</label>
+				<p>
+					<input type="text" class="form-control" id="u_misura2" name="u_misura2">
+				<p>
+			</div>
+
+			<div class="align-left">
+				<button name="submit" class="add btn-info" onclick="modIngrediente()">Modifica</button>
+			</div>
+			<div class="align-left">
+				<button onclick="n_mod_Ingr()">Annulla</button>
 			</div>
 		</div>
 

@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.example.demo.model.Dolce;
+import com.example.demo.model.Ingrediente;
 import com.example.demo.service.DBDolceService;
 import com.example.demo.service.DBIngredienteService;
 
@@ -22,8 +23,10 @@ public class AdminDolceController {
 	@Autowired
 	@Qualifier("mainDolceService")
 	private DBDolceService dolceService;
+	@Autowired
+	@Qualifier("mainIngredienteService")
+	private DBIngredienteService ingredienteService;
 	
-
 	public AdminDolceController() {
 
 	}
@@ -88,6 +91,19 @@ public class AdminDolceController {
 		
 	}
 	
+	@RequestMapping(value = "/admin/api/dolci/ingrediente/{id}", method = RequestMethod.GET)
+	public Ingrediente getIngrediente(@PathVariable int id) {
+		
+		Optional<Ingrediente> ingrediente = ingredienteService.getById(id);
+		
+		if (ingrediente.isEmpty()) {
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "item not found");
+		}
+
+		return ingrediente.get();
+		
+	}
+	
 	@RequestMapping(value ="/admin/api/dolci/{id}/{nome_ingr}/{qta}/{uMisura}", method = RequestMethod.PUT)
 	public Dolce addIngrediente(@PathVariable int id, @PathVariable int qta,  @PathVariable String nome_ingr, @PathVariable String uMisura, @RequestBody Dolce dolce) {
 		
@@ -101,6 +117,17 @@ public class AdminDolceController {
 		
 		
 		return foundDolce.get();
+		
+	}
+	
+	@RequestMapping(value ="/admin/api/dolci/{id}/{nome_ingr}/{qta}/{uMisura}", method = RequestMethod.POST)
+	public Ingrediente modIngrediente(@PathVariable int id, @PathVariable int qta,  @PathVariable String nome_ingr, @PathVariable String uMisura, @RequestBody Dolce dolce) {
+		
+		dolceService.modIngrediente(id, nome_ingr, qta, uMisura);
+		
+		Optional<Ingrediente> foundIngrediente = ingredienteService.getById(id);
+		
+		return foundIngrediente.get();
 		
 	}
 

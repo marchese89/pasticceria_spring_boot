@@ -74,6 +74,16 @@ public class DBDolceService implements IDolceService {
 	}
 	
 	@Override
+	public Boolean modIngrediente(int id, String nome,int qta, String uMisura) {
+		Optional<Ingrediente> foundIngrediente = ingredienteRepository.findById(id);
+		Optional<Dolce> foundDolce = dolceRepository.findById(foundIngrediente.get().getIdDolce().getId());
+		foundDolce.get().modificaIngrediente(id,nome, qta, uMisura);
+		dolceRepository.save(foundDolce.get());
+		return true;
+	}
+	
+	
+	@Override
 	public Boolean removeIngrediente(int id) {
 		Optional<Ingrediente> foundIngrediente = ingredienteRepository.findById(id);
 		Optional<Dolce> foundDolce = dolceRepository.findById(foundIngrediente.get().getIdDolce().getId());

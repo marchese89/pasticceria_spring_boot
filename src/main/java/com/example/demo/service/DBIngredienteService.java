@@ -5,9 +5,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.example.demo.model.Dolce;
 import com.example.demo.model.Ingrediente;
-import com.example.demo.repository.IDolceRepository;
 import com.example.demo.repository.IngredienteRepository;
 
 @Service("mainIngredienteService")
@@ -15,9 +13,6 @@ public class DBIngredienteService implements IIngredienteService {
 
 	@Autowired
 	private IngredienteRepository ingredienteRepository;
-	
-	@Autowired
-	private IDolceRepository dolceRepository;
 	
 	@Override
 	public Iterable<Ingrediente> getAll() {
@@ -36,7 +31,7 @@ public class DBIngredienteService implements IIngredienteService {
 	}
 
 	@Override
-	public Optional<Ingrediente> update(int id, Ingrediente ingrediente) {
+	public Optional<Ingrediente> update(int id, String nome_ingr, int qta, String uMisura) {
 		
 		Optional<Ingrediente> foundIngrediente = ingredienteRepository.findById(id);
 
@@ -44,9 +39,9 @@ public class DBIngredienteService implements IIngredienteService {
 			return Optional.empty();
 		}
 
-		foundIngrediente.get().setNome(ingrediente.getNome());
-		foundIngrediente.get().setQta(ingrediente.getQta());
-		foundIngrediente.get().setuMisura(ingrediente.getuMisura());
+		foundIngrediente.get().setNome(nome_ingr);
+		foundIngrediente.get().setQta(qta);
+		foundIngrediente.get().setuMisura(uMisura);
 		
 		ingredienteRepository.save(foundIngrediente.get());
 

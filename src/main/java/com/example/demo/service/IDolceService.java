@@ -18,5 +18,7 @@ public interface IDolceService {
 	
 	public Boolean addIngrediente(int id, String nome,int qta, String uMisura);
 	
+	public Boolean modIngrediente(int id, String nome,int qta, String uMisura);
+	
 	public Boolean removeIngrediente(int id);
 }

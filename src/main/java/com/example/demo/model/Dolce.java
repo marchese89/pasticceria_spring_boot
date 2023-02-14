@@ -1,5 +1,6 @@
 package com.example.demo.model;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
@@ -54,7 +55,43 @@ public class Dolce {
 	}
 
 	public Double getPrezzo() {
-		return prezzo;
+		
+		int anno = Integer.parseInt(getData().toString().substring(0, 4));
+		int mese = Integer.parseInt(getData().toString().substring(5, 7));
+		mese--;
+		int giorno = Integer.parseInt(getData().toString().substring(8, 10));
+		GregorianCalendar calendar = new GregorianCalendar();
+		GregorianCalendar calendar2 = new GregorianCalendar(anno,mese,giorno);
+		calendar.set(Calendar.HOUR_OF_DAY, 0);
+		calendar.set(Calendar.MINUTE, 0);
+		calendar.set(Calendar.SECOND, 0);
+		calendar.set(Calendar.MILLISECOND, 0);
+		
+		calendar2.set(Calendar.HOUR_OF_DAY, 0);
+		calendar2.set(Calendar.MINUTE, 0);
+		calendar2.set(Calendar.SECOND, 0);
+		calendar2.set(Calendar.MILLISECOND, 0);
+		
+		long data = calendar2.getTimeInMillis();
+		long dataCorrente = calendar.getTimeInMillis();
+		
+		long timeDiff = dataCorrente - data;
+		int daysDiff = (int) (timeDiff / (1000 * 60 * 60 * 24));
+		if(daysDiff == 0) {
+			return prezzo;
+		}
+		
+		if(daysDiff == 1) {
+			return prezzo*0.8;
+		}
+		
+		if(daysDiff == 2) {
+			return prezzo*0.2;
+		}
+		
+		return 0.0;
+		
+		
 	}
 
 	public void setPrezzo(Double prezzo) {
@@ -80,6 +117,16 @@ public class Dolce {
 		i.setQta(qta);
 		i.setuMisura(uMisura);
 		lista.add(i);
+	}
+	
+	public void modificaIngrediente(int id, String nome, int qta, String uMisura) {
+		for(Ingrediente i : lista) {
+			if(i.getId() == id) {
+				i.setNome(nome);
+				i.setQta(qta);
+				i.setuMisura(uMisura);
+			}
+		}
 	}
 	
 	public void rimuoviIngrediente(int id) {
