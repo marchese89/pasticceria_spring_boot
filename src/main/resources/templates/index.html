@@ -36,7 +36,7 @@
 
 					for (var i = data.length - 1; i >= 0; i--) {
 						if (data[i].prezzo > 0) {
-							$('.grid').append('<div class="grid-item' + i + '" onmouseover="mostra_lista(' + i + ')" onmouseout="nascondi_lista(' + i + ')"><label id="dolce_' + i + '">' + data[i].nome + ' ' + data[i].prezzo + '&euro;</label></div>');
+							$('.grid').append('<div class="grid-item' + i + '" onmouseover="mostra_lista(' + i + ')" onmouseout="nascondi_lista(' + i + ')"><label id="dolce_' + i + '">' + data[i].nome + '</label></div>');
 							var lista_ist = data[i]['listaIstanze'];
 							if (lista_ist.length > 0) {
 								$('.grid-item' + i).append('<div id="ist' + i + '" class="ist' + i + '" >');
