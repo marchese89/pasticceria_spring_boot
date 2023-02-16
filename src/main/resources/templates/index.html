@@ -1,31 +1,7 @@
-<!--
 
-MIT License
-
-Copyright (c) 2021 LessTheory Academy
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-
--->
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="it">
 
 <head>
 	<meta charset="UTF-8">
@@ -61,6 +37,41 @@ SOFTWARE.
 					for (var i = data.length - 1; i >= 0; i--) {
 						if (data[i].prezzo > 0) {
 							$('.grid').append('<div class="grid-item' + i + '" onmouseover="mostra_lista(' + i + ')" onmouseout="nascondi_lista(' + i + ')"><label id="dolce_' + i + '">' + data[i].nome + ' ' + data[i].prezzo + '&euro;</label></div>');
+							var lista_ist = data[i]['listaIstanze'];
+							if (lista_ist.length > 0) {
+								$('.grid-item' + i).append('<div id="ist' + i + '" class="ist' + i + '" >');
+								$('.ist' + i).append('<b>Lista Prodotti</b><br>');
+
+								for (var j = 0; j < lista_ist.length; j++) {
+									var now = new Date();
+									now.setHours(0);
+									now.setMinutes(0);
+									now.setSeconds(0);
+									now.setMilliseconds(0);
+									var date1 = new Date(lista_ist[j].data);
+									date1.setHours(0);
+									date1.setMinutes(0);
+									date1.setSeconds(0);
+									date1.setMilliseconds(0);
+									var Difference_In_Time = now.getTime() - date1.getTime();
+									var Difference_In_Days = Difference_In_Time / (1000 * 3600 * 24);
+
+									if (Difference_In_Days <= 2) {
+										var prezzo_mod;
+										if(Difference_In_Days == 0){
+										 prezzo_mod = data[i].prezzo;
+										} 
+										if(Difference_In_Days == 1.0){
+										 prezzo_mod = (data[i].prezzo*0.8).toFixed(2);
+										} 
+										if(Difference_In_Days == 2.0){
+										 prezzo_mod = (data[i].prezzo*0.2).toFixed(2);
+										} 
+										$('.ist' + i).append('<label>' + lista_ist[j].data + " " +
+											', prezzo: ' + prezzo_mod + '&euro;</label><br>');
+									}
+								}
+							}
 							var lista_i = data[i]['lista'];
 							if (lista_i.length > 0) {
 								$('.grid-item' + i).append('<div id="hide' + i + '" class="hide' + i + '" style="display:none" >');

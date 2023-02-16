@@ -7,7 +7,9 @@ import org.springframework.stereotype.Service;
 
 import com.example.demo.model.Dolce;
 import com.example.demo.model.Ingrediente;
+import com.example.demo.model.IstanzaDolce;
 import com.example.demo.repository.IDolceRepository;
+import com.example.demo.repository.IIstanzaDolceRepository;
 import com.example.demo.repository.IngredienteRepository;
 
 @Service("mainDolceService")
@@ -18,6 +20,9 @@ public class DBDolceService implements IDolceService {
 	
 	@Autowired
 	private IngredienteRepository ingredienteRepository;
+	
+	@Autowired
+	private IIstanzaDolceRepository istanzaDolceRepository;
 
 	@Override
 	public Iterable<Dolce> getAll() {
@@ -37,7 +42,7 @@ public class DBDolceService implements IDolceService {
 
 	@Override
 	public Optional<Dolce> update(int id, Dolce dolce) {
-
+		System.out.println("dolce_nome: "+dolce.getNome()+", dolce_prezzo: "+dolce.getPrezzo());
 		Optional<Dolce> foundDolce = dolceRepository.findById(id);
 
 		if (foundDolce.isEmpty()) {
@@ -46,7 +51,7 @@ public class DBDolceService implements IDolceService {
 
 		foundDolce.get().setNome(dolce.getNome());
 		foundDolce.get().setPrezzo(dolce.getPrezzo());
-
+		
 		dolceRepository.save(foundDolce.get());
 
 		return foundDolce;
@@ -90,6 +95,24 @@ public class DBDolceService implements IDolceService {
 		foundDolce.get().rimuoviIngrediente(id);
 		dolceRepository.save(foundDolce.get());
 		ingredienteRepository.delete(foundIngrediente.get());
+		return true;
+	}
+
+	@Override
+	public Boolean addIstanze(int id, int qta) {
+		Optional<Dolce> foundDolce = dolceRepository.findById(id);
+		foundDolce.get().aggiungiIstanza(qta);
+		dolceRepository.save(foundDolce.get());
+		return true;
+	}
+	
+	@Override
+	public Boolean removeIstanza(int id) {
+		Optional<IstanzaDolce> foundIstanzaDolce = istanzaDolceRepository.findById(id);
+		Optional<Dolce> foundDolce = dolceRepository.findById(foundIstanzaDolce.get().getIdDolce().getId());
+		foundDolce.get().rimuoviIstanza(id);
+		dolceRepository.save(foundDolce.get());
+		istanzaDolceRepository.delete(foundIstanzaDolce.get());
 		return true;
 	}
 

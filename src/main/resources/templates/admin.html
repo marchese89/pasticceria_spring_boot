@@ -1,31 +1,7 @@
-<!--
 
-MIT License
-
-Copyright (c) 2021 LessTheory Academy
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-
--->
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="it">
 
 <head>
 	<meta charset="UTF-8">
@@ -48,7 +24,7 @@ SOFTWARE.
 	<script type="text/javascript">
 		$(document).ready(function () {
 
-			// dynamic version
+			
 
 			loadDolci();
 
@@ -173,6 +149,7 @@ SOFTWARE.
 						$('tbody').append('<tr><td>' + data[i].id + '</td><td nowrap>' + data[i].nome +
 							'</td><td>' + data[i].prezzo + '&euro;</td><td class="edit pointer" data-id="' + data[i].id +
 							'" data-name="' + data[i].nome + '"><i class="fa fa-pencil" aria-hidden="true"></i></td>' +
+							'<td onclick="mostraAddIst('+data[i].id+')"><i class="fa fa-pencil" aria-hidden="true"></td>'+
 							'<td class="edit2 pointer" data-id="' + data[i].id +
 							'" data-name="' + data[i].nome + '"><i class="fa fa-pencil" aria-hidden="true"></i></td>'
 							+ '<td class="delete pointer" data-id="' + data[i].id +
@@ -185,11 +162,25 @@ SOFTWARE.
 							for (var j = 0; j < lista_i.length; j++)
 								$('tbody').append('<tr><td nowrap>' + lista_i[j].nome + '</td><td>' +
 									lista_i[j].qta + '</td><td>' + lista_i[j].uMisura + '</td>' +
-									'<td class="edit3 pointer" onclick="mostraModIngrediente(' + lista_i[j].id +
+									'<td class="edit3 pointer" style="text-align:center"  onclick="mostraModIngrediente(' + lista_i[j].id +
 								')"><i class="fa fa-pencil" aria-hidden="true"></i></td>' +
 									'<td class="delete2 pointer" data-id="' + lista_i[j].id +
 									'" onclick="cancellaIngrediente('+lista_i[j].id +')"><i class="fa fa-trash" aria-hidden="true"></i></td>');
 							$('tbody').append('</tr>');
+							
+						}
+						var lista_ist = data[i]['listaIstanze'];
+						if (lista_ist.length > 0) {
+							$('tbody').append('<tr><td colspan=6"><h4>Lista Istanze</h4></td></tr>');
+							$('tbody').append('<tr><th>Data</th><th>Cancella</th>' +
+								'</tr>');
+							for (var j = 0; j < lista_ist.length; j++)
+								$('tbody').append('<tr><td nowrap>' + lista_ist[j].data + '</td><td>' +
+									
+									'<td class="delete pointer" onclick="eliminaIstanza(' + lista_ist[j].id +
+								')"><i class="fa fa-trash" aria-hidden="true"></i></td>');
+							$('tbody').append('</tr>');
+							
 						}
 					}
 
@@ -308,6 +299,65 @@ SOFTWARE.
 
 					var myToast = Toastify({
 						text: "Ingrediente Inserito con successo",
+						duration: 2000
+					});
+
+					myToast.showToast();
+				}
+			});
+		}
+		
+		function mostraAddIst(id){
+			document.getElementById('add_ist').style.display = 'block';
+			document.getElementById('id_dolce_ist').value = id;
+			document.getElementById('nome_id_dolce3').innerHTML = id;
+		}
+		
+		function nascondiAddIst(){
+			document.getElementById('add_ist').style.display = 'none';
+			document.getElementById('id_dolce_ist').value = "";
+			document.getElementById('nome_id_dolce3').innerHTML = "";
+			document.getElementById("qta3").value = "";
+		}
+		
+		function aggiungiIstanza(){
+			var id = document.getElementById("id_dolce_ist").value;
+			var qta = document.getElementById("qta3").value;
+			
+			$.ajax({
+				url: '/admin/api/dolci/add_ist/' + id + '/' + qta ,
+				method: 'post',
+				contentType: 'application/json',
+				data: JSON.stringify({
+					id: id,
+					qta: qta,
+				}),
+				success: function (data) {
+					nascondiAddIst();
+					
+					loadDolci();
+
+					var myToast = Toastify({
+						text: "Istanze aggiunte con successo",
+						duration: 2000
+					});
+
+					myToast.showToast();
+				}
+			});
+			
+		}
+		
+		function eliminaIstanza(id){
+			$.ajax({
+				url: '/admin/api/dolci/rem_ist/' + id,
+				method: 'delete',
+				success: function (data) {
+
+					loadDolci();
+
+					var myToast = Toastify({
+						text: "Istanza Dolce Cancellata",
 						duration: 2000
 					});
 
@@ -442,6 +492,26 @@ SOFTWARE.
 				<button onclick="n_mod_Ingr()">Annulla</button>
 			</div>
 		</div>
+		
+		<div id="add_ist" style="display: none;">
+			<h1>Aggiungi Istanze <label id="nome_id_dolce3"></labelid>
+			</h1>
+			<input type="hidden" name="id" id="id_dolce_ist">
+			
+			<div class="form-group">
+				<label for="nome">Quanti&agrave;</label>
+				<p>
+					<input type="text" class="form-control" id="qta3" name="qta3" >
+			</div>
+			
+
+			<div class="align-left">
+				<button name="submit" class="add btn-info" onclick="aggiungiIstanza()">Aggiungi</button>
+			</div>
+			<div class="align-left">
+				<button onclick="nascondiAddIst()">Annulla</button>
+			</div>
+		</div>
 
 		<table class="admin-table" border="0">
 			<thead>
@@ -450,6 +520,7 @@ SOFTWARE.
 					<th>Nome</th>
 					<th>Prezzo</th>
 					<th>Modifica</th>
+					<th>Aggiungi Istanze</th>
 					<th>Aggiungi Ingrediente</th>
 					<th>Cancella</th>
 				</tr>

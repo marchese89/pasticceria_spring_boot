@@ -8,6 +8,7 @@ import java.util.Set;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.CascadeType;
@@ -30,13 +31,6 @@ public class Dolce {
 	private Double prezzo;
 	
 	
-	public Dolce() {
-		this.setData((new GregorianCalendar()).getTime());
-	}
-	
-	@DateTimeFormat(pattern = "dd-MM-yyyy")
-    @Column(name = "date")
-    private Date data;
 
 	public int getId() {
 		return id;
@@ -55,7 +49,7 @@ public class Dolce {
 	}
 
 	public Double getPrezzo() {
-		
+		/*
 		int anno = Integer.parseInt(getData().toString().substring(0, 4));
 		int mese = Integer.parseInt(getData().toString().substring(5, 7));
 		mese--;
@@ -90,25 +84,22 @@ public class Dolce {
 		}
 		
 		return 0.0;
-		
-		
+		*/
+		return prezzo;
 	}
 
 	public void setPrezzo(Double prezzo) {
 		this.prezzo = prezzo;
 	}
 	
-	public Date getData() {
-		return data;
-	}
-
-	public void setData(Date data) {
-		this.data = data;
-	}
 
 	@JsonManagedReference
 	@OneToMany(cascade = CascadeType.ALL)
 	private List<Ingrediente> lista;
+	
+	@JsonManagedReference
+	@OneToMany(cascade = CascadeType.ALL)
+	private List<IstanzaDolce> listaIstanze;
 	
 	public void aggiungiIngrediente(String nome,int qta, String uMisura) {
 		Ingrediente i = new Ingrediente();
@@ -139,6 +130,26 @@ public class Dolce {
 		}
 		lista.remove(index);
 	}
+	
+	public void aggiungiIstanza(int qta) {
+		for(int i = 0; i < qta; i++) {
+			IstanzaDolce ist = new IstanzaDolce();
+			ist.setIdDolce(this);
+			ist.setData(new GregorianCalendar().getTime());
+			listaIstanze.add(ist);
+		}
+	}
+	
+	public void rimuoviIstanza(int id) {
+		int index = -1;
+		for(int i = 0; i < listaIstanze.size(); i++) {
+			if(listaIstanze.get(i).getId() == id) {
+				index = i;
+				break;
+			}
+		}
+		listaIstanze.remove(index);
+	}
 
 	public List<Ingrediente> getLista() {
 		return lista;
@@ -146,6 +157,14 @@ public class Dolce {
 
 	public void setLista(List<Ingrediente> lista) {
 		this.lista = lista;
+	}
+
+	public List<IstanzaDolce> getListaIstanze() {
+		return listaIstanze;
+	}
+
+	public void setListaIstanze(List<IstanzaDolce> listaIstanze) {
+		this.listaIstanze = listaIstanze;
 	}
 	
 }

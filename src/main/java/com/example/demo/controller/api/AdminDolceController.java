@@ -130,6 +130,25 @@ public class AdminDolceController {
 		return foundIngrediente.get();
 		
 	}
+	
+	@RequestMapping(value = "/admin/api/dolci/add_ist/{id}/{qta}", method = RequestMethod.POST)
+	public Dolce aggiungiIstanza(@PathVariable int id, @PathVariable int qta) {
+		dolceService.addIstanze(id, qta);
+		Optional<Dolce> foundDolce = dolceService.getById(id);
+		return foundDolce.get();
+	}
+	
+	@RequestMapping(value = "/admin/api/dolci/rem_ist/{id}", method = RequestMethod.DELETE)
+	public void rimuoviIstanza(@PathVariable int id) {
+		
+		Boolean isDeleted = dolceService.removeIstanza(id);
+
+		if (isDeleted == false) {
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "item not found");
+		}
+		
+		
+	}
 
 
 }
